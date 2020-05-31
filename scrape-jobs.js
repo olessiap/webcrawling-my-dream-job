@@ -4,7 +4,7 @@ var URL = require('url-parse');
 
 var fs = require('fs');
 
-var SEARCH_WORD = "javascript";
+var SEARCH_WORDS = ["front", "javascript", "react", "html", "css", "redux", "ui",];
 
 request("https://meerkad.com/remote-developer-jobs", function(error, response, body) {
   if(error) {
@@ -15,8 +15,7 @@ request("https://meerkad.com/remote-developer-jobs", function(error, response, b
   var $ = cheerio.load(body);
   $('div.large_job_result').each(function( index ) {
     var title = $(this).find('div.font-weight-bold').text().trim();
-    console.log(title);
-    var isWordFound = searchForWord(title, SEARCH_WORD);
+    var isWordFound = searchForWord(title, SEARCH_WORDS);
     if(isWordFound) {
       var link = $(this).find('div.text-center > a').attr('href');
       fs.appendFileSync('joblinks.txt', title + " - " + link + '\n');
@@ -26,7 +25,12 @@ request("https://meerkad.com/remote-developer-jobs", function(error, response, b
   });
 });
 
-function searchForWord(title, word) {
-  return(title.toLowerCase().indexOf(word.toLowerCase()) !== -1) 
+function searchForWord(title, words) {
+  for(let keyword of words) {
+    if(title.toLowerCase().includes(keyword.toLowerCase())) {
+      return true;
+    }
+  }
+  return false;
 }
 
